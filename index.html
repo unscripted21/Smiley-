@@ -11,7 +11,7 @@
 
   body{
     min-height:100vh;
-    background: radial-gradient(circle at 20% 20%, #FFE8B0 0%, #FFD3E0 40%, #FFC1D8 70%, #FFB6C9 100%);
+    background: radial-gradient(circle at 15% 15%, #FFF0C4 0%, #FFD9E6 35%, #FFB8D6 65%, #F79BC3 100%);
     font-family:'Poppins', sans-serif;
     display:flex;
     align-items:center;
@@ -21,13 +21,13 @@
     padding:24px;
   }
 
-  /* floating smiley background */
+  /* floating background elements */
   .floaters{ position:fixed; inset:0; pointer-events:none; z-index:0; }
   .floaters span{
     position:absolute;
-    font-size:26px;
-    opacity:0.55;
+    opacity:0.5;
     animation: float 9s ease-in-out infinite;
+    filter:drop-shadow(0 0 6px rgba(255,255,255,0.6));
   }
 
   @keyframes float{
@@ -35,17 +35,45 @@
     50%{ transform: translateY(-26px) rotate(12deg); }
   }
 
-  .card{
+  /* rotating gradient ring around the card */
+  .ring{
     position:relative;
     z-index:2;
-    max-width:480px;
+    max-width:500px;
     width:100%;
-    background:#FFFDF8;
-    border-radius:26px;
-    padding:44px 36px 38px;
-    box-shadow: 0 30px 60px rgba(214,90,130,0.25), 0 0 0 1px rgba(255,255,255,0.6) inset;
+    border-radius:30px;
+    padding:3px;
+    background: conic-gradient(from 0deg, #FFD36B, #E96B96, #FFB6C9, #FFE39A, #E96B96, #FFD36B);
+    background-size:200% 200%;
+    animation: rotateRing 6s linear infinite;
+    box-shadow: 0 30px 70px rgba(214,90,130,0.35);
+  }
+  @keyframes rotateRing{ to{ filter:hue-rotate(360deg); } }
+
+  .card{
+    position:relative;
+    background:rgba(255,253,248,0.96);
+    backdrop-filter: blur(6px);
+    border-radius:28px;
+    padding:46px 38px 40px;
     text-align:center;
     animation: popIn 0.7s cubic-bezier(.2,.9,.3,1.3) both;
+    animation-play-state:paused;
+    overflow:hidden;
+  }
+  body.revealed .card{ animation-play-state:running; }
+
+  .card::before{
+    content:'';
+    position:absolute; top:-40%; left:-20%;
+    width:160%; height:160%;
+    background: radial-gradient(circle, rgba(255,211,107,0.18) 0%, transparent 60%);
+    animation: drift 8s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes drift{
+    0%,100%{ transform:translate(0,0); }
+    50%{ transform:translate(6%,4%); }
   }
 
   @keyframes popIn{
@@ -54,26 +82,34 @@
   }
 
   .stamp{
-    font-size:13px;
-    letter-spacing:0.18em;
+    position:relative;
+    display:inline-block;
+    font-size:12.5px;
+    letter-spacing:0.22em;
     text-transform:uppercase;
     color:#D6608A;
     font-weight:600;
-    margin-bottom:6px;
+    margin-bottom:10px;
+    padding:6px 16px;
+    border:1px solid rgba(214,96,138,0.35);
+    border-radius:999px;
   }
 
   h1{
     font-family:'Fraunces', serif;
-    font-size:clamp(1.9rem, 6vw, 2.6rem);
+    font-size:clamp(2.1rem, 7vw, 3rem);
     font-weight:700;
-    line-height:1.15;
-    margin:6px 0 4px;
-    background-image: linear-gradient(100deg, #E96B96 0%, #FFE39A 20%, #E96B96 40%, #FFD36B 60%, #E96B96 80%, #FFE39A 100%);
+    line-height:1.12;
+    margin:10px 0 6px;
+    background-image: linear-gradient(100deg,
+      #E96B96 0%, #FFE39A 12%, #E96B96 24%, #7a2f4a 36%,
+      #FFD36B 48%, #E96B96 60%, #FFE39A 72%, #7a2f4a 84%, #E96B96 100%);
     background-size:300% auto;
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
     animation: shimmer 5s linear infinite;
+    text-shadow: 0 0 30px rgba(233,107,150,0.25);
   }
 
   @keyframes shimmer{
@@ -82,76 +118,181 @@
   }
 
   .emoji-row{
-    font-size:34px;
-    margin:10px 0 22px;
+    font-size:36px;
+    margin:12px 0 24px;
     animation: wiggle 2.4s ease-in-out infinite;
     display:inline-block;
+    filter:drop-shadow(0 4px 10px rgba(214,90,130,0.25));
   }
 
   @keyframes wiggle{
-    0%,100%{ transform:rotate(-6deg); }
-    50%{ transform:rotate(6deg); }
+    0%,100%{ transform:rotate(-6deg) scale(1); }
+    50%{ transform:rotate(6deg) scale(1.06); }
   }
 
   .message{
     font-size:15.5px;
-    line-height:1.75;
+    line-height:1.8;
     color:#5A3B44;
     text-align:left;
   }
 
-  .message p{ margin-bottom:14px; }
+  .message p{ margin-bottom:15px; opacity:0; animation: lineIn 0.6s ease forwards; animation-play-state:paused; }
   .message p:last-child{ margin-bottom:0; }
+  .message p:nth-child(1){ animation-delay:0.4s; }
+  .message p:nth-child(2){ animation-delay:0.65s; }
+  .message p:nth-child(3){ animation-delay:0.9s; }
+  .message p:nth-child(4){ animation-delay:1.15s; }
+  .message p:nth-child(5){ animation-delay:1.4s; }
+  .message p:nth-child(6){ animation-delay:1.65s; }
+  body.revealed .message p{ animation-play-state:running; }
+  @keyframes lineIn{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
 
   .highlight{
     font-weight:600;
-    color:#D6608A;
+    background-image:linear-gradient(100deg, #D6608A, #FFB84D, #D6608A);
+    background-size:220% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation: shimmer 4s linear infinite;
   }
 
   .signature{
-    margin-top:26px;
+    margin-top:28px;
     font-family:'Fraunces', serif;
-    font-size:1.2rem;
+    font-size:1.35rem;
     font-weight:700;
     color:#D6608A;
     text-align:right;
+    opacity:0;
+    animation: lineIn 0.6s ease forwards;
+    animation-play-state:paused;
+    animation-delay:1.9s;
   }
+  body.revealed .signature{ animation-play-state:running; }
 
   .divider{
-    width:60px;
+    width:70px;
     height:3px;
     border-radius:3px;
     background:linear-gradient(90deg, #FFD36B, #E96B96);
-    margin:20px auto;
+    margin:22px auto;
+    position:relative;
+  }
+  .divider::before{
+    content:'♥';
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    background:#FFFDF8;
+    color:#E96B96;
+    font-size:14px;
+    padding:0 8px;
   }
 
   .tag{
-    margin-top:22px;
+    margin-top:24px;
     font-size:12px;
-    letter-spacing:0.08em;
+    letter-spacing:0.1em;
     text-transform:uppercase;
     color:#C99;
-    opacity:0.75;
+    opacity:0.8;
   }
 
   @media (prefers-reduced-motion: reduce){
     *{ animation:none !important; }
+    .message p, .signature{ opacity:1 !important; }
   }
+
+  /* ---------- Preloader ---------- */
+  #preloader{
+    position:fixed; inset:0;
+    z-index:100;
+    background: radial-gradient(circle at 50% 40%, #FFE8B0 0%, #FFC1D8 60%, #F79BC3 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:22px;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #preloader.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .pre-heart{
+    font-size:52px;
+    animation: beat 1.1s ease-in-out infinite;
+    filter:drop-shadow(0 6px 14px rgba(214,90,130,0.4));
+  }
+  @keyframes beat{
+    0%,100%{ transform:scale(1); }
+    25%{ transform:scale(1.22); }
+    40%{ transform:scale(0.96); }
+    55%{ transform:scale(1.14); }
+    70%{ transform:scale(1); }
+  }
+  .pre-text{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:16px;
+    letter-spacing:0.03em;
+    color:#8a3355;
+    min-height:22px;
+    opacity:1;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .pre-text.fade{
+    opacity:0;
+    transform:translateY(4px);
+  }
+  .pre-bar{
+    width:160px;
+    height:4px;
+    border-radius:4px;
+    background:rgba(138,51,85,0.15);
+    overflow:hidden;
+  }
+  .pre-bar-fill{
+    height:100%;
+    width:0%;
+    border-radius:4px;
+    background:linear-gradient(90deg,#FFD36B,#E96B96);
+    animation: fillBar 8.35s ease forwards;
+  }
+  @keyframes fillBar{ to{ width:100%; } }
+
+  body.locked{ overflow:hidden; }
+  #preloader.hide ~ .floaters,
+  #preloader.hide ~ .ring{ visibility:visible; }
 </style>
 </head>
 <body>
 
+<div id="preloader">
+  <div class="pre-heart">💛</div>
+  <div class="pre-text" id="preText">Authenticating: My Rare Gem... ✅</div>
+  <div class="pre-bar"><div class="pre-bar-fill" id="preBarFill"></div></div>
+</div>
+
 <div class="floaters" id="floaters"></div>
 
+<div class="ring">
 <div class="card">
   <div class="stamp">Girlfriend's Day 💌</div>
   <h1>Happy Girlfriend's<br>Day, Smiley!</h1>
-  <div class="emoji-row">😄💛😊</div>
+  <div class="emoji-row">😄❤️😊</div>
 
   <div class="message">
-    <p>Funny how we ended up with the <span class="highlight">same nickname</span> — maybe it's because being around you genuinely makes me smile, even on the days I don't feel like it.</p>
+    <p>Funny how we ended up with the <span class="highlight">same nickname</span> —maybe it's because having  you genuinely makes me smile😂😂😂, even on the days I don't feel like it.</p>
+    <p>Since then, you've become someone I genuinely look forward to talking to every single day...your playful personality, and the warmth you bring into every conversation have made a place in my heart. Even though we haven't met face to face yet, you've managed to make distance feel smaller than I ever imagined.</p>
     <p>You've got this way of turning ordinary moments into the ones I actually remember, and I don't take that for granted.</p>
-    <p>Thank you for being the kind of friend who <span class="highlight">shows up</span>, laughs loud with me, and keeps things real.</p>
+    <p>Thank you for being the kind of personn who <span class="highlight">shows up</span>,who make good moments with me, and keeps things real.</p>
+    <p>Until then, I'll continue appreciating every message, and every little moment we share. Distance may separate us physically, but it has never stopped you from making me feel close to you.</p>
     <p>Here's to more smiles, more inside jokes, and more <em>us</em>.</p>
   </div>
 
@@ -159,9 +300,43 @@
   <div class="signature">Love you, Smiley 💛</div>
   <div class="tag">from your fellow smiley</div>
 </div>
+</div>
 
 <script>
-  const emojis = ['😄','💛','😊','✨','💫','😁'];
+  document.body.classList.add('locked');
+
+  const preMessages = [
+    "Authenticating: My Rare Gem... ✅",
+    "Just for My Ms. Smiley... 😁❤️",
+    "Loading Infinite Smiles... 😊",
+    "Access Granted: My Favorite Human. 😂"
+  ];
+  const preTextEl = document.getElementById('preText');
+  let msgIndex = 0;
+
+  function cycleMessage(){
+    preTextEl.classList.add('fade');
+    setTimeout(() => {
+      msgIndex++;
+      if(msgIndex < preMessages.length){
+        preTextEl.textContent = preMessages[msgIndex];
+        preTextEl.classList.remove('fade');
+        setTimeout(cycleMessage, 2000);
+      }
+    }, 350);
+  }
+  setTimeout(cycleMessage, 2000);
+
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const pre = document.getElementById('preloader');
+      pre.classList.add('hide');
+      document.body.classList.remove('locked');
+      document.body.classList.add('revealed');
+    }, 8350);
+  });
+
+  const emojis = ['😄','💛','😊','✨','💫','😁','💕','❤️','🌟'];
   const container = document.getElementById('floaters');
   const count = 18;
   for(let i=0; i<count; i++){
